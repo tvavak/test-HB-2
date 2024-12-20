@@ -232,3 +232,50 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 
 numberElements.forEach(number => observer.observe(number));
+
+// Gestion du menu mobile et du débordement
+document.addEventListener('DOMContentLoaded', () => {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    const body = document.body;
+    let isMenuOpen = false;
+
+    // Fonction pour fermer le menu
+    const closeMenu = () => {
+        navbarCollapse.classList.remove('show');
+        body.style.overflow = 'auto';
+        isMenuOpen = false;
+    };
+
+    // Gestionnaire du bouton du menu
+    navbarToggler.addEventListener('click', () => {
+        isMenuOpen = !isMenuOpen;
+        body.style.overflow = isMenuOpen ? 'hidden' : 'auto';
+    });
+
+    // Fermer le menu lors d'un clic sur un lien
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (window.innerWidth < 992) {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                closeMenu();
+                
+                // Attendre la fermeture du menu avant de scroller
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }, 300);
+            }
+        });
+    });
+
+    // Fermer le menu si on clique en dehors
+    document.addEventListener('click', (e) => {
+        if (isMenuOpen && !navbarCollapse.contains(e.target) && !navbarToggler.contains(e.target)) {
+            closeMenu();
+        }
+    });
+});
